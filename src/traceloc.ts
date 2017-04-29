@@ -2,11 +2,7 @@ import { install } from "source-map-support";
 install();
 
 import * as path from "path";
-
 import { ITraceLoc } from "./itraceloc";
-
-// import * as debugModule from "debug";
-// const log = debugModule("traceloc");
 
 export function here(callDepth = 0): ITraceLoc {
     return new TraceLoc(callDepth + 1);
