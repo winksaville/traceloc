@@ -3,18 +3,20 @@ install();
 
 import * as path from "path";
 
+import { ITraceLoc } from "./itraceloc";
+
 // import * as debugModule from "debug";
 // const log = debugModule("traceloc");
 
-export class TraceLoc {
+export function here(callDepth = 0): TraceLoc {
+    const tm = new TraceMarker();
+    return tm.mark(1 + callDepth).getLocation();
+}
+
+export class TraceLoc implements ITraceLoc {
     /**
      * Return the location of where this routine was called from
      */
-    public static here(callDepth = 0): TraceLoc {
-        const tm = new TraceMarker();
-        return tm.mark(1 + callDepth).getLocation();
-    }
-
     public func: string;
     public file: string;
     public line: number;
@@ -64,7 +66,7 @@ export class TraceMarker {
      * Return the TraceLoc
      *
      */
-    public getLocation(): TraceLoc {
+    public getLocation(): ITraceLoc {
         // log(`getLocation: ${this.stackState}`);
         const location = new TraceLoc();
         if (this.stackState) {

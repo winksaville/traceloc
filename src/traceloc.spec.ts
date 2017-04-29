@@ -3,18 +3,17 @@
 
 import {
     Expect,
-    IgnoreTest,
     SpyOnProperty,
     Test,
 } from "alsatian";
 
-import { TraceLoc, TraceMarker } from "../out/traceloc";
+import { here, TraceLoc, TraceMarker } from "../out/traceloc";
 
 export class TracingTests {
 
     @Test()
     public testTracing() {
-        const loc = TraceLoc.here();
+        const loc = here();
 
         Expect(loc.toString())
             .toBe(`${loc.func} ${loc.file}:${loc.line}:${loc.col}`);
@@ -65,7 +64,7 @@ export class TracingTests {
 
     @Test("test normal function here")
     public normalHere() {
-        const loc = TraceLoc.here();
+        const loc = here();
         Expect(loc.func).toBe("TracingTests.normalHere");
         Expect(loc.file).toBe("src/traceloc.spec.ts");
         Expect(loc.line).toBeGreaterThan(0);
@@ -75,7 +74,7 @@ export class TracingTests {
     @Test("Execute anon")
     public anon() {
         (function() { // tslint:disable-line
-            const loc = TraceLoc.here();
+            const loc = here();
             Expect(loc.func).not.toBeTruthy();
             Expect(loc.file).toBe("src/traceloc.spec.ts");
             Expect(loc.line).toBeGreaterThan(0);
@@ -83,41 +82,35 @@ export class TracingTests {
         })();
     }
 
-    // Ignore because fails with nyc
-    @IgnoreTest()
     @Test("test here on the same line")
     public testSameLineHere() {
         let loc1, loc2: TraceLoc; // tslint:disable-line
-        loc1 = TraceLoc.here(), loc2 = TraceLoc.here();
+        loc1 = here(), loc2 = here();
         Expect(loc1.line).toBeGreaterThan(0);
         Expect(loc1.line).toBe(loc2.line);
         Expect(loc1.col).toBeGreaterThan(0);
         Expect(loc1.col).toBeLessThan(loc2.col);
     }
 
-    // Ignore because fails with nyc
-    @IgnoreTest()
     @Test("test here on two adjacent lines")
     public testAjacentHeres() {
-        const loc1 = TraceLoc.here();
-        const loc2 = TraceLoc.here();
+        const loc1 = here();
+        const loc2 = here();
         Expect(loc2.line).toBe(loc1.line + 1);
         Expect(loc2.line).toBeGreaterThan(loc1.line);
         Expect(loc1.col).toBeGreaterThan(0);
         Expect(loc1.col).toBe(loc2.col);
     }
 
-    // Ignore because fails with nyc
-    @IgnoreTest()
     @Test("test column")
     public testHere() {
-        const loc1 = TraceLoc
-.here(); // tslint:disable-line
-        const loc2 = TraceLoc
- .here(); // tslint:disable-line
+        const loc1 =
+here(); // tslint:disable-line
+        const loc2 =
+ here(); // tslint:disable-line
         Expect(loc1.line).toBeGreaterThan(0);
         Expect(loc2.line).toBe(loc1.line + 2);
-        Expect(loc1.col).toBe(2);
-        Expect(loc2.col).toBe(3);
+        Expect(loc1.col).toBe(1);
+        Expect(loc2.col).toBe(2);
     }
 }
