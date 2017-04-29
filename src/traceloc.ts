@@ -8,39 +8,44 @@ import { ITraceLoc } from "./itraceloc";
 // import * as debugModule from "debug";
 // const log = debugModule("traceloc");
 
-export function here(callDepth = 0): TraceLoc {
-    const tm = new TraceMarker();
-    return tm.mark(1 + callDepth).getLocation();
+export function here(callDepth = 0): ITraceLoc {
+    return new TraceLoc(callDepth + 1);
 }
 
 export class TraceLoc implements ITraceLoc {
-    /**
-     * Return the location of where this routine was called from
-     */
-    public func: string;
-    public file: string;
-    public line: number;
-    public col: number;
-
-    public constructor() {
-        this.file = "";
-        this.func = "";
-        this.line = -1;
-        this.col  = -1;
-    }
-
-    /**
-     * Return string of the form:
-     *  "func file:line:col" if func is anonymous then there will be a leading space
-     *  /(.*?) (.*?):(\d*):(\d*)/
-     */
-    public toString(): string {
-        return `${this.func} ${this.file}:${this.line}:${this.col}`;
-    }
-}
-
-export class TraceMarker {
     private stackState: string | undefined;
+
+    private _func: string = "";
+    private _file: string = "";
+    private _line: number = -1;
+    private _col: number = -1;
+
+    public get func(): string {
+        if (!this._func) {
+            this.updateLocation();
+        }
+        return this._func;
+    }
+    public get file(): string {
+        if (!this._file) {
+            this.updateLocation();
+        }
+        return this._file;
+    }
+    public get line(): number {
+        if (this._line < 0) {
+            this.updateLocation();
+        }
+
+        return this._line;
+    }
+    public get col(): number {
+        if (this._col < 0) {
+            this.updateLocation();
+        }
+
+        return this._col;
+    }
 
     /**
      * Mark the "current" location.
@@ -51,24 +56,27 @@ export class TraceMarker {
      *        mark where that subroutine was called from you need
      *        callDepth = 1 or the approprate value.
      */
-    public mark(callDepth: number = 0): TraceMarker {
+    public constructor(callDepth: number = 0) {
         const saveStackTraceLimit = Error.stackTraceLimit;
         Error.stackTraceLimit = callDepth + 1;
         const err = new Error();
-        Error.captureStackTrace(err, this.mark);
+        Error.captureStackTrace(err, this.constructor);
         Error.stackTraceLimit = saveStackTraceLimit;
         this.stackState = err.stack;
         // log(`${this.stackState}`);
         return this;
     }
 
+    public toString(): string {
+        return `${this.func} ${this.file}:${this.line}:${this.col}`;
+    }
+
     /**
-     * Return the TraceLoc
+     * Update the location info
      *
      */
-    public getLocation(): ITraceLoc {
+    private updateLocation() {
         // log(`getLocation: ${this.stackState}`);
-        const location = new TraceLoc();
         if (this.stackState) {
             const stack = this.stackState.split("\n");
             if (stack.length >= 2) {
@@ -81,25 +89,25 @@ export class TraceMarker {
                 let relative: string;
                 if (r && r.length > 4) {
                     relative = path.relative(projectRoot, r[2]);
-                    location.file = relative;
-                    location.func = r[1];
-                    location.line = Number(r[3]);
-                    location.col = Number(r[4]);
+                    this._file = relative;
+                    this._func = r[1];
+                    this._line = Number(r[3]);
+                    this._col = Number(r[4]);
                 } else {
                     // Check for anonymous function which means location
                     // string has no func and is of the form; " at file:line:col"
                     r = /.*? at *(.*?):(\d+):(\d+)/.exec(`${stack[stack.length - 1]}`);
                     if (r && r.length > 3) {
                         relative = path.relative(projectRoot, r[1]);
-                        location.file = relative;
-                        location.func = "";
-                        location.line = Number(r[2]);
-                        location.col = Number(r[3]);
+                        this._file = relative;
+                        this._func = "";
+                        this._line = Number(r[2]);
+                        this._col = Number(r[3]);
                     }
                 }
             }
         }
         // log(`getLocation: ${location}`);
-        return location;
+        return this;
     }
 }

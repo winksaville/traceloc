@@ -7,7 +7,9 @@ import {
     Test,
 } from "alsatian";
 
-import { here, TraceLoc, TraceMarker } from "../out/traceloc";
+import { here, TraceLoc } from "../out/traceloc";
+
+import { ITraceLoc } from "../out/itraceloc";
 
 export class TracingTests {
 
@@ -19,10 +21,10 @@ export class TracingTests {
             .toBe(`${loc.func} ${loc.file}:${loc.line}:${loc.col}`);
     }
 
-    @Test("stack was never marked location will be empty")
-    public testTraceMarkerEmpty() {
-        const emptyMarker =  new TraceMarker();
-        const loc = emptyMarker.getLocation();
+    @Test("stack is empty")
+    public testTraceLocEmptyStack() {
+        const loc = new TraceLoc();
+        SpyOnProperty(loc, "stackState").andReturnValue("");
         Expect(loc.file).not.toBeTruthy();
         Expect(loc.func).not.toBeTruthy();
         Expect(loc.line).toBeLessThan(0);
@@ -30,10 +32,9 @@ export class TracingTests {
     }
 
     @Test("stack is shorter then where current location is")
-    public testTraceMarkerShortStack() {
-        const marker = new TraceMarker().mark();
-        SpyOnProperty(marker, "stackState").andReturnValue("Error");
-        const loc = marker.getLocation();
+    public testTraceLocShortStack() {
+        const loc = new TraceLoc();
+        SpyOnProperty(loc, "stackState").andReturnValue("Error");
         Expect(loc.file).not.toBeTruthy();
         Expect(loc.func).not.toBeTruthy();
         Expect(loc.line).toBeLessThan(0);
@@ -41,22 +42,20 @@ export class TracingTests {
     }
 
     @Test("stack doesn't contain enough fields")
-    public testTraceMarkerNotEnoughFieldsInStack() {
-        const marker = new TraceMarker().mark();
-        SpyOnProperty(marker, "stackState")
+    public testTraceLocNotEnoughFieldsInStack() {
+        const loc = new TraceLoc();
+        SpyOnProperty(loc, "stackState")
             .andReturnValue("Error\n  at aFunc (/xyz/file.xx:12)");
-        const loc = marker.getLocation();
         Expect(loc.file).not.toBeTruthy();
         Expect(loc.func).not.toBeTruthy();
         Expect(loc.line).toBeLessThan(0);
         Expect(loc.col).toBeLessThan(0);
     }
 
-    @Test("test normal function mark & loc")
-    public normalMarkAndLoc() {
-        const mark = new TraceMarker().mark();
-        const loc = mark.getLocation();
-        Expect(loc.func).toBe("TracingTests.normalMarkAndLoc");
+    @Test("test normal loc")
+    public normal() {
+        const loc = new TraceLoc();
+        Expect(loc.func).toBe("TracingTests.normal");
         Expect(loc.file).toBe("src/traceloc.spec.ts");
         Expect(loc.line).toBeGreaterThan(0);
         Expect(loc.col).toBeGreaterThan(0);
@@ -84,7 +83,7 @@ export class TracingTests {
 
     @Test("test here on the same line")
     public testSameLineHere() {
-        let loc1, loc2: TraceLoc; // tslint:disable-line
+        let loc1, loc2: ITraceLoc; // tslint:disable-line
         loc1 = here(), loc2 = here();
         Expect(loc1.line).toBeGreaterThan(0);
         Expect(loc1.line).toBe(loc2.line);

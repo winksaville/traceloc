@@ -1,14 +1,12 @@
 const Expect = require("alsatian").Expect;
 // const @Test = require("alsatian").@Test;
 const TraceLoc = require("../out/traceloc").TraceLoc;
-const TraceMarker = require("../out/traceloc").TraceMarker;
 const here = require("../out/traceloc").here;
 
 // A self executing anonymous function
 (function() {
     console.log("anonymous function");
-    let mark = new TraceMarker().mark();
-    let loc = mark.getLocation();
+    let loc = new TraceLoc();
     Expect(loc.func).not.toBeTruthy();
     Expect(loc.file).toBe("src/traceloc.spec.es6.js");
     Expect(loc.line).toBeGreaterThan(0);
