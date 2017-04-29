@@ -1,0 +1,46 @@
+{
+  "name": "traceloc",
+  "version": "0.1.0",
+  "description": "Trace the current location, i.e. filename, line, col ...",
+  "main": "./out/traceloc.js",
+  "types": "./out/traceloc.d.ts",
+  "repository": "http://github.com/winksaville/traceloc",
+  "author": "Wink Saville <wink@saville.com> (http://github.com/winksaville)",
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^2.6.6",
+    "source-map-support": "^0.4.15"
+  },
+  "devDependencies": {
+    "@types/debug": "^0.0.29",
+    "@types/node": "^7.0.14",
+    "@types/source-map-support": "^0.2.28",
+    "alsatian": "^1.3.1",
+    "nyc": "^10.2.0",
+    "tslint": "^5.1.0",
+    "typescript": "^2.3.1"
+  },
+  "keywords": [
+    "debug",
+    "trace"
+  ], 
+  "nyc": {
+    "exclude": [
+      "**/*.spec.js"
+    ]
+  },
+  "scripts": {
+    "cleanup": "rm -rf out ./nyc_output ./coverage",
+    "distcleanup": "yarn cleanup && rm -rf node_modules",
+    "build": "tsc -p src/traceloc.tsconfig.json",
+    "test:es6": "node src/traceloc.spec.es6.js",
+    "test:es6.dbg": "node --inspect-brk src/traceloc.spec.es6.js",
+    "pretest:dbg": "yarn pretest:traceloc",
+    "test:dbg": "node --inspect-brk ./node_modules/alsatian/cli/alsatian-cli.js out/traceloc.spec.js --tap",
+    "pretest:traceloc": "yarn build && tsc -p src/traceloc.spec.tsconfig.json && yarn review",
+    "test:traceloc": "alsatian out/traceloc.spec.js",
+    "test": "yarn test:es6 && yarn test:traceloc",
+    "review": "tslint ./src/*.ts",
+    "coverage": "nyc --reporter=lcov --reporter=html yarn test:traceloc && nyc report"
+  }
+}
