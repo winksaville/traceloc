@@ -3,8 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const source_map_support_1 = require("source-map-support");
 source_map_support_1.install();
 const path = require("path");
-// import * as debugModule from "debug";
-// const log = debugModule("traceloc");
 function here(callDepth = 0) {
     return new TraceLoc(callDepth + 1);
 }
