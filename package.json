@@ -23,7 +23,7 @@
   "keywords": [
     "debug",
     "trace"
-  ], 
+  ],
   "nyc": {
     "exclude": [
       "**/*.spec.js"
@@ -34,13 +34,13 @@
     "distcleanup": "yarn cleanup && rm -rf node_modules",
     "install-self": "(cd node_modules && ln -s ../ traceloc)",
     "build": "tsc -p src/traceloc.tsconfig.json",
-    "test:es6": "node src/traceloc.spec.es6.js",
-    "test:es6.dbg": "node --inspect-brk src/traceloc.spec.es6.js",
+    "test:js": "node src/traceloc.spec.js",
+    "test:js.dbg": "node --inspect-brk src/traceloc.spec.js",
     "pretest:dbg": "yarn pretest:traceloc",
     "test:dbg": "node --inspect-brk ./node_modules/alsatian/cli/alsatian-cli.js out/traceloc.spec.js --tap",
     "pretest:traceloc": "yarn build && tsc -p src/traceloc.spec.tsconfig.json && yarn review",
     "test:traceloc": "alsatian out/traceloc.spec.js",
-    "test": "yarn test:traceloc && yarn test:es6",
+    "test": "yarn test:traceloc && yarn test:js",
     "review": "tslint ./src/*.ts",
     "coverage": "nyc --reporter=lcov --reporter=html yarn test:traceloc && nyc report"
   }
