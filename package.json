@@ -16,6 +16,8 @@
     "@types/node": "^7.0.14",
     "@types/source-map-support": "^0.2.28",
     "alsatian": "^1.3.1",
+    "benchmark-async": "^2.2.0",
+    "microtime": "^2.1.3",
     "nyc": "^10.2.0",
     "tslint": "^5.1.0",
     "typescript": "^2.3.1"
@@ -42,6 +44,8 @@
     "test:traceloc": "alsatian out/traceloc.spec.js",
     "test": "yarn test:traceloc && yarn test:js",
     "review": "tslint ./src/*.ts",
-    "coverage": "nyc --reporter=lcov --reporter=html yarn test:traceloc && nyc report"
+    "coverage": "nyc --reporter=lcov --reporter=html yarn test:traceloc && nyc report",
+    "benchmark": "yarn build && node perf/perf.js",
+    "benchmark:save": "yarn build && node perf/perf.js perf/perf.data.json"
   }
 }

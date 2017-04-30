@@ -105,3 +105,17 @@ There is also `Coverage` which target builds, tests and output coverage data usi
 ```
 yarn coverage
 ```
+## Benchmark
+On my laptop here() runs at about 7,000 ops/sec this
+is quite slow, for comparison a routine that increaments
+its parameter runs at 80,000,000 ops/sec.
+
+To run the benchmark:
+```
+yarn benchmark
+```
+To run and append the results:
+```
+yarn benchmark:save
+```
+
