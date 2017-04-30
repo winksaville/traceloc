@@ -1,4 +1,4 @@
-# Trace the current location in a program
+# Trace the current location in a program [![Build Status](https://travis-ci.org/winksaville/traceloc.svg?branch=master)](https://travis-ci.org/winksaville/traceloc)
 Allows access to the file, func, line and col while executing
 
 ## Prerequisites
