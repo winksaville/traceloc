@@ -1,24 +1,17 @@
 # Trace the current location in a program
 Allows access to the file, func, line and col while executing
 
-# Prerequisites
+## Prerequisites
 - node 
 - yarn
 
-# Written in Typescript
-- traceloc.d.ts local
-
-# Build and test
+## Usage
+Note: typescript types, `traceloc.d.ts` are integral so there are no @types/traceloc
 ```
-yarn test
+yarn add traceloc
 ```
 
-You can also build separately
-```
-yarn build
-```
-
-# API
+## API
 A very simple API there one routine, here(), and an
 interface, ITraceLoc, are exported:
 ```
@@ -33,7 +26,10 @@ interface ITraceLoc {
 
 export here(callDepth=0): ITraceLoc;
 ```
-The simplest
+## Examples:
+Before running these examples run `yarn install-self`.
+
+The simplest possible example is something like:
 ```
 $ cat -n examples/t1.ts
      1	import { here } from "traceloc";
@@ -87,4 +83,25 @@ $ node examples/t3.js
 enter: sub:13
 Ready to exit
 exit: sub:18
+```
+## To Hack on this code
+### Clone the repo
+git clone https://github.com/winksaville/traceloc
+### Install dependencies
+```
+yarn install
+```
+### Test
+The `test` target also builds.
+
+```
+yarn test
+```
+You can also `build` separately.
+```
+yarn build
+```
+There is also `Coverage` which target builds, tests and output coverage data using `nyc`
+```
+yarn coverage
 ```
