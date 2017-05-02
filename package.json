@@ -1,6 +1,6 @@
 {
   "name": "traceloc",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Trace the current location, i.e. filename, line, col ...",
   "main": "./out/traceloc.js",
   "types": "./out/traceloc.d.ts",
