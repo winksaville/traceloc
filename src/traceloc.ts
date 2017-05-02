@@ -2,7 +2,15 @@ import { install } from "source-map-support";
 install();
 
 import * as path from "path";
-import { ITraceLoc } from "./itraceloc";
+
+export interface ITraceLoc {
+    readonly func: string;
+    readonly file: string;
+    readonly line: number;
+    readonly col: number;
+
+    toString(): string;
+}
 
 export function here(callDepth = 0): ITraceLoc {
     return new TraceLoc(callDepth + 1);

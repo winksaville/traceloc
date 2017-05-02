@@ -1,4 +1,10 @@
-import { ITraceLoc } from "./itraceloc";
+export interface ITraceLoc {
+    readonly func: string;
+    readonly file: string;
+    readonly line: number;
+    readonly col: number;
+    toString(): string;
+}
 export declare function here(callDepth?: number): ITraceLoc;
 export declare class TraceLoc implements ITraceLoc {
     private stackState;

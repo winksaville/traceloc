@@ -1,15 +1,10 @@
-// import * as debugModule from "debug";
-// const log = debugModule("traceloc");
-
 import {
     Expect,
     SpyOnProperty,
     Test,
 } from "alsatian";
 
-import { here, TraceLoc } from "../out/traceloc";
-
-import { ITraceLoc } from "../out/itraceloc";
+import { here, ITraceLoc, TraceLoc } from "../out/traceloc";
 
 export class TracingTests {
 
