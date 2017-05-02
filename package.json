@@ -38,7 +38,7 @@
     "test:js.dbg": "node --inspect-brk src/traceloc.spec.js",
     "pretest:dbg": "yarn pretest:traceloc",
     "test:dbg": "node --inspect-brk ./node_modules/alsatian/cli/alsatian-cli.js out/traceloc.spec.js --tap",
-    "pretest:traceloc": "yarn build && tsc -p src/traceloc.spec.tsconfig.json && yarn review",
+    "pretest:traceloc": "yarn build && tsc -p src/traceloc.spec.tsconfig.json",
     "test:traceloc": "alsatian out/traceloc.spec.js",
     "test": "yarn test:traceloc && yarn test:js",
     "review": "tslint ./src/*.ts",

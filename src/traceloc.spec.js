@@ -1,5 +1,8 @@
 const Expect = require("alsatian").Expect;
 const here = require("../out/traceloc").here;
+const setProjectRoot = require("../out/traceloc").setProjectRoot;
+
+setProjectRoot(__dirname);
 
 // A self executing anonymous function
 (function() {

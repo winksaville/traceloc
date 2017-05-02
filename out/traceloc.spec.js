@@ -11,7 +11,44 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const alsatian_1 = require("alsatian");
 const traceloc_1 = require("../out/traceloc");
+const os = require("os");
+const path = require("path");
 class TracingTests {
+    testSetProjectRoot() {
+        let loc;
+        let orgVal = traceloc_1.setProjectRoot("weirdValue");
+        alsatian_1.Expect(traceloc_1.setProjectRoot(orgVal)).toBe("weirdValue");
+        alsatian_1.Expect(traceloc_1.setProjectRoot(orgVal)).toBe(orgVal);
+        traceloc_1.setProjectRoot(undefined);
+        loc = new traceloc_1.TraceLoc();
+        alsatian_1.Expect(loc.file).toBe("src/traceloc.spec.ts");
+        traceloc_1.setProjectRoot(null);
+        loc = new traceloc_1.TraceLoc();
+        alsatian_1.Expect(loc.file).toBe("src/traceloc.spec.ts");
+        traceloc_1.setProjectRoot(".");
+        loc = new traceloc_1.TraceLoc();
+        alsatian_1.Expect(loc.file).toBe("src/traceloc.spec.ts");
+        traceloc_1.setProjectRoot("");
+        loc = new traceloc_1.TraceLoc();
+        if (os.type() === "Linux") {
+            alsatian_1.Expect(loc.file.indexOf("/")).toBe(0);
+        }
+        alsatian_1.Expect(loc.file.indexOf("src/traceloc.spec.ts")).toBeGreaterThan(0);
+        traceloc_1.setProjectRoot("/");
+        loc = new traceloc_1.TraceLoc();
+        if (!path.relative("/", ".")) {
+            // Current working directory is / be careful :)
+            alsatian_1.Expect(loc.file.indexOf("src/traceloc.spec.ts")).toBe(0);
+        }
+        else {
+            // Current working directory is not /
+            alsatian_1.Expect(loc.file.indexOf("src/traceloc.spec.ts")).toBeGreaterThan(0);
+        }
+        traceloc_1.setProjectRoot(path.join(__dirname));
+        loc = new traceloc_1.TraceLoc();
+        alsatian_1.Expect(loc.file).toBe("../src/traceloc.spec.ts");
+        traceloc_1.setProjectRoot(orgVal);
+    }
     testTracing() {
         const loc = traceloc_1.here();
         alsatian_1.Expect(loc.toString())
@@ -90,6 +127,12 @@ class TracingTests {
         alsatian_1.Expect(loc2.col).toBe(2);
     }
 }
+__decorate([
+    alsatian_1.Test(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TracingTests.prototype, "testSetProjectRoot", null);
 __decorate([
     alsatian_1.Test(),
     __metadata("design:type", Function),

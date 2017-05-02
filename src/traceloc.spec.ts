@@ -4,9 +4,56 @@ import {
     Test,
 } from "alsatian";
 
-import { here, ITraceLoc, TraceLoc } from "../out/traceloc";
+import { here, ITraceLoc, setProjectRoot, TraceLoc } from "../out/traceloc";
+
+import * as os from "os";
+import * as path from "path";
 
 export class TracingTests {
+
+    @Test()
+    public testSetProjectRoot() {
+        let loc: ITraceLoc;
+
+        let orgVal = setProjectRoot("weirdValue");
+        Expect(setProjectRoot(orgVal)).toBe("weirdValue");
+        Expect(setProjectRoot(orgVal)).toBe(orgVal);
+
+        setProjectRoot(undefined);
+        loc = new TraceLoc();
+        Expect(loc.file).toBe("src/traceloc.spec.ts");
+
+        setProjectRoot(null);
+        loc = new TraceLoc();
+        Expect(loc.file).toBe("src/traceloc.spec.ts");
+
+        setProjectRoot(".");
+        loc = new TraceLoc();
+        Expect(loc.file).toBe("src/traceloc.spec.ts");
+
+        setProjectRoot("");
+        loc = new TraceLoc();
+        if (os.type() === "Linux") {
+            Expect(loc.file.indexOf("/")).toBe(0);
+        }
+        Expect(loc.file.indexOf("src/traceloc.spec.ts")).toBeGreaterThan(0);
+
+        setProjectRoot("/");
+        loc = new TraceLoc();
+        if (!path.relative("/", ".")) {
+            // Current working directory is / be careful :)
+            Expect(loc.file.indexOf("src/traceloc.spec.ts")).toBe(0);
+        } else {
+            // Current working directory is not /
+            Expect(loc.file.indexOf("src/traceloc.spec.ts")).toBeGreaterThan(0);
+        }
+
+        setProjectRoot(path.join(__dirname));
+        loc = new TraceLoc();
+        Expect(loc.file).toBe("../src/traceloc.spec.ts");
+
+        setProjectRoot(orgVal);
+    }
 
     @Test()
     public testTracing() {

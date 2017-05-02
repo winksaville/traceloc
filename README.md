@@ -12,19 +12,43 @@ yarn add traceloc
 ```
 
 ## API
-A very simple API there one routine, here(), and an
-interface, ITraceLoc, are exported:
+A very simple API there two routines, here(), setProjectRoot()
+and an interface, ITraceLoc exported:
 ```
-interface ITraceLoc {
+/**
+ * The TraceLoc interface it provides the location
+ * infomration and a toString function.
+ */
+export interface ITraceLoc {
     readonly func: string;
     readonly file: string;
     readonly line: number;
     readonly col: number;
-
     toString(): string;
 }
-
-export here(callDepth=0): ITraceLoc;
+/**
+ * The user may change to expected root of the project
+ * and filepaths returned file ITraceLoc.file will be
+ * relative to the root parameter. The default if not set
+ * (i.e. "", undefined or null) is ".", the current
+ * working directory.
+ *
+ * @param root is the full path to the directory containing the project
+ * @param returns previous value
+ */
+export declare function setProjectRoot(root: string | undefined | null): string | undefined | null;
+/**
+ * Return the ITraceLoc oject.
+ *
+ * @param callDepth is the stackframe index which to retrieve
+ *        the location information. Defaults to 0. A non-zero
+ *        value can be used to provide the location for the
+ *        n'th entry on stackframe. This is useful if custom
+ *        here() is created that calls this here(). See
+ *        example/t3.ts.
+ * @return ITraceLoc
+ */
+export declare function here(callDepth?: number): ITraceLoc;
 ```
 ## Examples:
 Before running these examples run `yarn install-self`.

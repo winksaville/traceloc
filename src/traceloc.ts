@@ -3,6 +3,10 @@ install();
 
 import * as path from "path";
 
+/**
+ * The TraceLoc interface it provides the location
+ * infomration and a toString function.
+ */
 export interface ITraceLoc {
     readonly func: string;
     readonly file: string;
@@ -12,6 +16,36 @@ export interface ITraceLoc {
     toString(): string;
 }
 
+let projectRoot: string | undefined | null;
+
+/**
+ * The user may change to expected root of the project
+ * and filepaths returned file ITraceLoc.file will be
+ * relative to the root parameter. The default if not set
+ * (i.e. "", undefined or null) is ".", the current
+ * working directory.
+ *
+ * @param root is the path to the directory containing the project
+ *        it may be relative or absolute.
+ * @param returns previous value
+ */
+export function setProjectRoot(root: string | undefined | null): string | undefined | null {
+    const prev = projectRoot;
+    projectRoot = root;
+    return prev;
+}
+
+/**
+ * Return the ITraceLoc oject.
+ *
+ * @param callDepth is the stackframe index which to retrieve
+ *        the location information. Defaults to 0. A non-zero
+ *        value can be used to provide the location for the
+ *        n'th entry on stackframe. This is useful if custom
+ *        here() is created that calls this here(). See
+ *        example/t3.ts.
+ * @return ITraceLoc
+ */
 export function here(callDepth = 0): ITraceLoc {
     return new TraceLoc(callDepth + 1);
 }
@@ -75,6 +109,23 @@ export class TraceLoc implements ITraceLoc {
         return `${this.func} ${this.file}:${this.line}:${this.col}`;
     }
 
+    public getRelativeFileName(prjRoot: string | undefined | null, fileName: string): string {
+        let relative: string;
+
+        // If nothing the use __dirname
+        if (prjRoot === undefined || prjRoot === null) {
+            prjRoot = ".";
+        }
+
+        if (prjRoot) {
+            relative = path.relative(prjRoot, fileName);
+        } else {
+            // If no prjRoot return fileName
+            relative = fileName;
+        }
+        return relative;
+    }
+
     /**
      * Update the location info
      *
@@ -85,14 +136,14 @@ export class TraceLoc implements ITraceLoc {
             const stack = this.stackState.split("\n");
             if (stack.length >= 2) {
                 // log(`getLocation: stack[tos]=${stack[stack.length - 1]}`);
-                const projectRoot = path.dirname(__dirname);
 
                 // Check for non-anonymous function which means
                 // location string is of the form; " at func (file:line:col)"
                 let r = /.*? at (.*?) \((.*?):(\d+):(\d+)\)/.exec(`${stack[stack.length - 1]}`);
                 let relative: string;
                 if (r && r.length > 4) {
-                    relative = path.relative(projectRoot, r[2]);
+                    relative = this.getRelativeFileName(projectRoot, r[2]);
+                    // log(`len > 4 projectRoot=${projectRoot} r[2]=${r[2]} relative=${relative}`);
                     this._file = relative;
                     this._func = r[1];
                     this._line = Number(r[3]);
@@ -102,7 +153,8 @@ export class TraceLoc implements ITraceLoc {
                     // string has no func and is of the form; " at file:line:col"
                     r = /.*? at *(.*?):(\d+):(\d+)/.exec(`${stack[stack.length - 1]}`);
                     if (r && r.length > 3) {
-                        relative = path.relative(projectRoot, r[1]);
+                        relative = this.getRelativeFileName(projectRoot, r[1]);
+                        // log(`len > 3 projectRoot=${projectRoot} r[1]=${r[1]} relative=${relative}`);
                         this._file = relative;
                         this._func = "";
                         this._line = Number(r[2]);

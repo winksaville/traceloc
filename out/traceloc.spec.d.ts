@@ -1,4 +1,5 @@
 export declare class TracingTests {
+    testSetProjectRoot(): void;
     testTracing(): void;
     testTraceLocEmptyStack(): void;
     testTraceLocShortStack(): void;
