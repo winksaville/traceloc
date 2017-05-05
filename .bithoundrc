@@ -1,0 +1,11 @@
+{
+  "ignore": [
+    "**/node_modules/**",
+    "**/out/**",
+    "**/coverage/**"
+  ],
+  "critics": {
+    "lint": {"engine": "tslint"},
+    "wc": {"limit":  10000}
+  }
+}
