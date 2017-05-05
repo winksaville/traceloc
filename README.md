@@ -1,4 +1,4 @@
-# Trace the current location in a program [![Build Status](https://travis-ci.org/winksaville/traceloc.svg?branch=master)](https://travis-ci.org/winksaville/traceloc)
+# Trace the current location in a program [![Build Status](https://travis-ci.org/winksaville/traceloc.svg?branch=master)](https://travis-ci.org/winksaville/traceloc)[![bitHound Overall Score](https://www.bithound.io/github/winksaville/traceloc/badges/score.svg)](https://www.bithound.io/github/winksaville/traceloc)
 Allows access to the file, func, line and col while executing
 
 ## Prerequisites
