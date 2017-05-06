@@ -9,14 +9,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const alsatian_1 = require("alsatian");
-const traceloc_1 = require("../out/traceloc");
-const os = require("os");
-const path = require("path");
-class TracingTests {
-    testSetProjectRoot() {
-        let loc;
-        let orgVal = traceloc_1.setProjectRoot("weirdValue");
+var alsatian_1 = require("alsatian");
+var traceloc_1 = require("../out/traceloc");
+var os = require("os");
+var path = require("path");
+var TracingTests = (function () {
+    function TracingTests() {
+    }
+    TracingTests.prototype.testSetProjectRoot = function () {
+        var loc;
+        var orgVal = traceloc_1.setProjectRoot("weirdValue");
         alsatian_1.Expect(traceloc_1.setProjectRoot(orgVal)).toBe("weirdValue");
         alsatian_1.Expect(traceloc_1.setProjectRoot(orgVal)).toBe(orgVal);
         traceloc_1.setProjectRoot(undefined);
@@ -48,85 +50,86 @@ class TracingTests {
         loc = new traceloc_1.TraceLoc();
         alsatian_1.Expect(loc.file).toBe("../src/traceloc.spec.ts");
         traceloc_1.setProjectRoot(orgVal);
-    }
-    testTracing() {
-        const loc = traceloc_1.here();
+    };
+    TracingTests.prototype.testTracing = function () {
+        var loc = traceloc_1.here();
         alsatian_1.Expect(loc.toString())
-            .toBe(`${loc.func} ${loc.file}:${loc.line}:${loc.col}`);
-    }
-    testTraceLocEmptyStack() {
-        const loc = new traceloc_1.TraceLoc();
+            .toBe(loc.func + " " + loc.file + ":" + loc.line + ":" + loc.col);
+    };
+    TracingTests.prototype.testTraceLocEmptyStack = function () {
+        var loc = new traceloc_1.TraceLoc();
         alsatian_1.SpyOnProperty(loc, "stackState").andReturnValue("");
         alsatian_1.Expect(loc.file).not.toBeTruthy();
         alsatian_1.Expect(loc.func).not.toBeTruthy();
         alsatian_1.Expect(loc.line).toBeLessThan(0);
         alsatian_1.Expect(loc.col).toBeLessThan(0);
-    }
-    testTraceLocShortStack() {
-        const loc = new traceloc_1.TraceLoc();
+    };
+    TracingTests.prototype.testTraceLocShortStack = function () {
+        var loc = new traceloc_1.TraceLoc();
         alsatian_1.SpyOnProperty(loc, "stackState").andReturnValue("Error");
         alsatian_1.Expect(loc.file).not.toBeTruthy();
         alsatian_1.Expect(loc.func).not.toBeTruthy();
         alsatian_1.Expect(loc.line).toBeLessThan(0);
         alsatian_1.Expect(loc.col).toBeLessThan(0);
-    }
-    testTraceLocNotEnoughFieldsInStack() {
-        const loc = new traceloc_1.TraceLoc();
+    };
+    TracingTests.prototype.testTraceLocNotEnoughFieldsInStack = function () {
+        var loc = new traceloc_1.TraceLoc();
         alsatian_1.SpyOnProperty(loc, "stackState")
             .andReturnValue("Error\n  at aFunc (/xyz/file.xx:12)");
         alsatian_1.Expect(loc.file).not.toBeTruthy();
         alsatian_1.Expect(loc.func).not.toBeTruthy();
         alsatian_1.Expect(loc.line).toBeLessThan(0);
         alsatian_1.Expect(loc.col).toBeLessThan(0);
-    }
-    normal() {
-        const loc = new traceloc_1.TraceLoc();
+    };
+    TracingTests.prototype.normal = function () {
+        var loc = new traceloc_1.TraceLoc();
         alsatian_1.Expect(loc.func).toBe("TracingTests.normal");
         alsatian_1.Expect(loc.file).toBe("src/traceloc.spec.ts");
         alsatian_1.Expect(loc.line).toBeGreaterThan(0);
         alsatian_1.Expect(loc.col).toBeGreaterThan(0);
-    }
-    normalHere() {
-        const loc = traceloc_1.here();
+    };
+    TracingTests.prototype.normalHere = function () {
+        var loc = traceloc_1.here();
         alsatian_1.Expect(loc.func).toBe("TracingTests.normalHere");
         alsatian_1.Expect(loc.file).toBe("src/traceloc.spec.ts");
         alsatian_1.Expect(loc.line).toBeGreaterThan(0);
         alsatian_1.Expect(loc.col).toBeGreaterThan(0);
-    }
-    anon() {
+    };
+    TracingTests.prototype.anon = function () {
         (function () {
-            const loc = traceloc_1.here();
+            var loc = traceloc_1.here();
             alsatian_1.Expect(loc.func).not.toBeTruthy();
             alsatian_1.Expect(loc.file).toBe("src/traceloc.spec.ts");
             alsatian_1.Expect(loc.line).toBeGreaterThan(0);
             alsatian_1.Expect(loc.col).toBeGreaterThan(0);
         })();
-    }
-    testSameLineHere() {
-        let loc1, loc2; // tslint:disable-line
+    };
+    TracingTests.prototype.testSameLineHere = function () {
+        var loc1, loc2; // tslint:disable-line
         loc1 = traceloc_1.here(), loc2 = traceloc_1.here();
         alsatian_1.Expect(loc1.line).toBeGreaterThan(0);
         alsatian_1.Expect(loc1.line).toBe(loc2.line);
         alsatian_1.Expect(loc1.col).toBeGreaterThan(0);
         alsatian_1.Expect(loc1.col).toBeLessThan(loc2.col);
-    }
-    testAjacentHeres() {
-        const loc1 = traceloc_1.here();
-        const loc2 = traceloc_1.here();
+    };
+    TracingTests.prototype.testAjacentHeres = function () {
+        var loc1 = traceloc_1.here();
+        var loc2 = traceloc_1.here();
         alsatian_1.Expect(loc2.line).toBe(loc1.line + 1);
         alsatian_1.Expect(loc2.line).toBeGreaterThan(loc1.line);
         alsatian_1.Expect(loc1.col).toBeGreaterThan(0);
         alsatian_1.Expect(loc1.col).toBe(loc2.col);
-    }
-    testHere() {
-        const loc1 = traceloc_1.here(); // tslint:disable-line
-        const loc2 = traceloc_1.here(); // tslint:disable-line
+    };
+    TracingTests.prototype.testHere = function () {
+        var loc1 = traceloc_1.here(); // tslint:disable-line
+        var loc2 = traceloc_1.here(); // tslint:disable-line
         alsatian_1.Expect(loc1.line).toBeGreaterThan(0);
         alsatian_1.Expect(loc2.line).toBe(loc1.line + 2);
         alsatian_1.Expect(loc1.col).toBe(1);
         alsatian_1.Expect(loc2.col).toBe(2);
-    }
-}
+    };
+    return TracingTests;
+}());
 __decorate([
     alsatian_1.Test(),
     __metadata("design:type", Function),
