@@ -9,13 +9,30 @@ import { here, ITraceLoc, setProjectRoot, TraceLoc } from "../out/traceloc";
 import * as os from "os";
 import * as path from "path";
 
+function myHere(): ITraceLoc {
+    return here(1);
+}
+
+function nestHere2(): ITraceLoc {
+    return here(2);
+}
+
+function nestHere1(): ITraceLoc {
+    return nestHere2();
+}
+
+function customHere(): string {
+    const loc = here(1);
+    return `customHere: ${loc.func}:${loc.line}`;
+}
+
 export class TracingTests {
 
     @Test()
     public testSetProjectRoot() {
         let loc: ITraceLoc;
 
-        let orgVal = setProjectRoot("weirdValue");
+        const orgVal = setProjectRoot("weirdValue");
         Expect(setProjectRoot(orgVal)).toBe("weirdValue");
         Expect(setProjectRoot(orgVal)).toBe(orgVal);
 
@@ -112,6 +129,33 @@ export class TracingTests {
         Expect(loc.col).toBeGreaterThan(0);
     }
 
+    @Test("Test we can have our own here()")
+    public testMyHere() {
+        const locMyHere = myHere();
+        const locHere = here();
+        Expect(locMyHere.func).toBe("TracingTests.testMyHere");
+        Expect(locMyHere.file).toBe("src/traceloc.spec.ts");
+        Expect(locMyHere.line).toBe(locHere.line - 1);
+        Expect(locMyHere.col).toBe(locHere.col + 2);
+    }
+
+    @Test("Test we can have nest here beyond 1")
+    public testNestingHereBeyond1() {
+        const locNestHere1 = nestHere1();
+        const locHere      = here();
+        Expect(locNestHere1.func).toBe("TracingTests.testNestingHereBeyond1");
+        Expect(locNestHere1.file).toBe("src/traceloc.spec.ts");
+        Expect(locNestHere1.line).toBe(locHere.line - 1);
+        Expect(locNestHere1.col).toBe(locHere.col);
+    }
+
+    @Test("Test custom here that returns string")
+    public testCustomHere() {
+        const locCustomHere = customHere();
+        const locHere = here();
+        Expect(locCustomHere).toBe(`customHere: ${locHere.func}:${locHere.line - 1}`);
+    }
+
     @Test("Execute anon")
     public anon() {
         (function() { // tslint:disable-line
@@ -125,8 +169,9 @@ export class TracingTests {
 
     @Test("test here on the same line")
     public testSameLineHere() {
-        let loc1, loc2: ITraceLoc; // tslint:disable-line
-        loc1 = here(), loc2 = here();
+        let loc1: ITraceLoc;
+        let loc2: ITraceLoc;
+        loc1 = here(); loc2 = here();
         Expect(loc1.line).toBeGreaterThan(0);
         Expect(loc1.line).toBe(loc2.line);
         Expect(loc1.col).toBeGreaterThan(0);
@@ -154,4 +199,5 @@ here(); // tslint:disable-line
         Expect(loc1.col).toBe(1);
         Expect(loc2.col).toBe(2);
     }
+
 }

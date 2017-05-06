@@ -6,6 +6,9 @@ export declare class TracingTests {
     testTraceLocNotEnoughFieldsInStack(): void;
     normal(): void;
     normalHere(): void;
+    testMyHere(): void;
+    testNestingHereBeyond1(): void;
+    testCustomHere(): void;
     anon(): void;
     testSameLineHere(): void;
     testAjacentHeres(): void;

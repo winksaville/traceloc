@@ -40,7 +40,7 @@
     "test:dbg": "node --inspect-brk ./node_modules/alsatian/cli/alsatian-cli.js out/traceloc.spec.js --tap",
     "pretest:traceloc": "yarn build && tsc -p src/traceloc.spec.tsconfig.json",
     "test:traceloc": "alsatian out/traceloc.spec.js",
-    "test": "yarn test:traceloc && yarn test:js",
+    "test": "yarn test:traceloc && yarn review && yarn test:js",
     "review": "tslint ./src/*.ts",
     "coverage": "nyc --reporter=lcov --reporter=html yarn test:traceloc && nyc report",
     "benchmark": "yarn build && node perf/perf.js",

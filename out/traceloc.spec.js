@@ -13,6 +13,19 @@ var alsatian_1 = require("alsatian");
 var traceloc_1 = require("../out/traceloc");
 var os = require("os");
 var path = require("path");
+function myHere() {
+    return traceloc_1.here(1);
+}
+function nestHere2() {
+    return traceloc_1.here(2);
+}
+function nestHere1() {
+    return nestHere2();
+}
+function customHere() {
+    var loc = traceloc_1.here(1);
+    return "customHere: " + loc.func + ":" + loc.line;
+}
 var TracingTests = (function () {
     function TracingTests() {
     }
@@ -95,6 +108,27 @@ var TracingTests = (function () {
         alsatian_1.Expect(loc.line).toBeGreaterThan(0);
         alsatian_1.Expect(loc.col).toBeGreaterThan(0);
     };
+    TracingTests.prototype.testMyHere = function () {
+        var locMyHere = myHere();
+        var locHere = traceloc_1.here();
+        alsatian_1.Expect(locMyHere.func).toBe("TracingTests.testMyHere");
+        alsatian_1.Expect(locMyHere.file).toBe("src/traceloc.spec.ts");
+        alsatian_1.Expect(locMyHere.line).toBe(locHere.line - 1);
+        alsatian_1.Expect(locMyHere.col).toBe(locHere.col + 2);
+    };
+    TracingTests.prototype.testNestingHereBeyond1 = function () {
+        var locNestHere1 = nestHere1();
+        var locHere = traceloc_1.here();
+        alsatian_1.Expect(locNestHere1.func).toBe("TracingTests.testNestingHereBeyond1");
+        alsatian_1.Expect(locNestHere1.file).toBe("src/traceloc.spec.ts");
+        alsatian_1.Expect(locNestHere1.line).toBe(locHere.line - 1);
+        alsatian_1.Expect(locNestHere1.col).toBe(locHere.col);
+    };
+    TracingTests.prototype.testCustomHere = function () {
+        var locCustomHere = customHere();
+        var locHere = traceloc_1.here();
+        alsatian_1.Expect(locCustomHere).toBe("customHere: " + locHere.func + ":" + (locHere.line - 1));
+    };
     TracingTests.prototype.anon = function () {
         (function () {
             var loc = traceloc_1.here();
@@ -105,8 +139,10 @@ var TracingTests = (function () {
         })();
     };
     TracingTests.prototype.testSameLineHere = function () {
-        var loc1, loc2; // tslint:disable-line
-        loc1 = traceloc_1.here(), loc2 = traceloc_1.here();
+        var loc1;
+        var loc2;
+        loc1 = traceloc_1.here();
+        loc2 = traceloc_1.here();
         alsatian_1.Expect(loc1.line).toBeGreaterThan(0);
         alsatian_1.Expect(loc1.line).toBe(loc2.line);
         alsatian_1.Expect(loc1.col).toBeGreaterThan(0);
@@ -172,6 +208,24 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TracingTests.prototype, "normalHere", null);
+__decorate([
+    alsatian_1.Test("Test we can have our own here()"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TracingTests.prototype, "testMyHere", null);
+__decorate([
+    alsatian_1.Test("Test we can have nest here beyond 1"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TracingTests.prototype, "testNestingHereBeyond1", null);
+__decorate([
+    alsatian_1.Test("Test custom here that returns string"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TracingTests.prototype, "testCustomHere", null);
 __decorate([
     alsatian_1.Test("Execute anon"),
     __metadata("design:type", Function),
