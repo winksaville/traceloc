@@ -2,7 +2,7 @@ const Benchmark = require("benchmark-async");
 const here = require("../out/traceloc").here;
 const fs = require("fs");
 
-let outFile;
+var outFile;
 if (process.argv.length == 3) {
     outFile = process.argv[2];
 }
@@ -33,12 +33,12 @@ suite.add('incHereLine', () => {
 })
 .on('complete', () => {
     //console.log(`suite=${JSON.stringify(suite, null, "\t")}`);
-    let rme = suite[0].stats.rme;
-    let hz = suite[0].hz;
-    let inchz = suite[1].hz;
-    let jsonDate = (new Date()).toJSON();
-    let data = { "ts": jsonDate, "hz": hz, "rme": rme, "inchz": inchz};
-    let jsonData = JSON.stringify(data);
+    var rme = suite[0].stats.rme;
+    var hz = suite[0].hz;
+    var inchz = suite[1].hz;
+    var jsonDate = (new Date()).toJSON();
+    var data = { "ts": jsonDate, "hz": hz, "rme": rme, "inchz": inchz};
+    var jsonData = JSON.stringify(data);
     console.log(`data: ${jsonData}`);
     if (outFile) {
         fs.appendFile(outFile, `${jsonData}\n`, (err) => {

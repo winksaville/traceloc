@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const source_map_support_1 = require("source-map-support");
+var source_map_support_1 = require("source-map-support");
 source_map_support_1.install();
-const path = require("path");
-let projectRoot;
+var path = require("path");
+var projectRoot;
 /**
  * The user may change to expected root of the project
  * and filepaths returned file ITraceLoc.file will be
@@ -16,7 +16,7 @@ let projectRoot;
  * @param returns previous value
  */
 function setProjectRoot(root) {
-    const prev = projectRoot;
+    var prev = projectRoot;
     projectRoot = root;
     return prev;
 }
@@ -32,11 +32,12 @@ exports.setProjectRoot = setProjectRoot;
  *        example/t3.ts.
  * @return ITraceLoc
  */
-function here(callDepth = 0) {
+function here(callDepth) {
+    if (callDepth === void 0) { callDepth = 0; }
     return new TraceLoc(callDepth + 1);
 }
 exports.here = here;
-class TraceLoc {
+var TraceLoc = (function () {
     /**
      * Mark the "current" location.
      *
@@ -46,49 +47,66 @@ class TraceLoc {
      *        mark where that subroutine was called from you need
      *        callDepth = 1 or the approprate value.
      */
-    constructor(callDepth = 0) {
+    function TraceLoc(callDepth) {
+        if (callDepth === void 0) { callDepth = 0; }
         this._func = "";
         this._file = "";
         this._line = -1;
         this._col = -1;
-        const saveStackTraceLimit = Error.stackTraceLimit;
+        var saveStackTraceLimit = Error.stackTraceLimit;
         Error.stackTraceLimit = callDepth + 1;
-        const err = new Error();
+        var err = new Error();
         Error.captureStackTrace(err, this.constructor);
         Error.stackTraceLimit = saveStackTraceLimit;
         this.stackState = err.stack;
         // log(`${this.stackState}`);
         return this;
     }
-    get func() {
-        if (!this._func) {
-            this.updateLocation();
-        }
-        return this._func;
-    }
-    get file() {
-        if (!this._file) {
-            this.updateLocation();
-        }
-        return this._file;
-    }
-    get line() {
-        if (this._line < 0) {
-            this.updateLocation();
-        }
-        return this._line;
-    }
-    get col() {
-        if (this._col < 0) {
-            this.updateLocation();
-        }
-        return this._col;
-    }
-    toString() {
-        return `${this.func} ${this.file}:${this.line}:${this.col}`;
-    }
-    getRelativeFileName(prjRoot, fileName) {
-        let relative;
+    Object.defineProperty(TraceLoc.prototype, "func", {
+        get: function () {
+            if (!this._func) {
+                this.updateLocation();
+            }
+            return this._func;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TraceLoc.prototype, "file", {
+        get: function () {
+            if (!this._file) {
+                this.updateLocation();
+            }
+            return this._file;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TraceLoc.prototype, "line", {
+        get: function () {
+            if (this._line < 0) {
+                this.updateLocation();
+            }
+            return this._line;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TraceLoc.prototype, "col", {
+        get: function () {
+            if (this._col < 0) {
+                this.updateLocation();
+            }
+            return this._col;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    TraceLoc.prototype.toString = function () {
+        return this.func + " " + this.file + ":" + this.line + ":" + this.col;
+    };
+    TraceLoc.prototype.getRelativeFileName = function (prjRoot, fileName) {
+        var relative;
         // If nothing the use __dirname
         if (prjRoot === undefined || prjRoot === null) {
             prjRoot = ".";
@@ -101,21 +119,21 @@ class TraceLoc {
             relative = fileName;
         }
         return relative;
-    }
+    };
     /**
      * Update the location info
      *
      */
-    updateLocation() {
+    TraceLoc.prototype.updateLocation = function () {
         // log(`getLocation: ${this.stackState}`);
         if (this.stackState) {
-            const stack = this.stackState.split("\n");
+            var stack = this.stackState.split("\n");
             if (stack.length >= 2) {
                 // log(`getLocation: stack[tos]=${stack[stack.length - 1]}`);
                 // Check for non-anonymous function which means
                 // location string is of the form; " at func (file:line:col)"
-                let r = /.*? at (.*?) \((.*?):(\d+):(\d+)\)/.exec(`${stack[stack.length - 1]}`);
-                let relative;
+                var r = /.*? at (.*?) \((.*?):(\d+):(\d+)\)/.exec("" + stack[stack.length - 1]);
+                var relative = void 0;
                 if (r && r.length > 4) {
                     relative = this.getRelativeFileName(projectRoot, r[2]);
                     // log(`len > 4 projectRoot=${projectRoot} r[2]=${r[2]} relative=${relative}`);
@@ -127,7 +145,7 @@ class TraceLoc {
                 else {
                     // Check for anonymous function which means location
                     // string has no func and is of the form; " at file:line:col"
-                    r = /.*? at *(.*?):(\d+):(\d+)/.exec(`${stack[stack.length - 1]}`);
+                    r = /.*? at *(.*?):(\d+):(\d+)/.exec("" + stack[stack.length - 1]);
                     if (r && r.length > 3) {
                         relative = this.getRelativeFileName(projectRoot, r[1]);
                         // log(`len > 3 projectRoot=${projectRoot} r[1]=${r[1]} relative=${relative}`);
@@ -141,7 +159,8 @@ class TraceLoc {
         }
         // log(`getLocation: ${location}`);
         return this;
-    }
-}
+    };
+    return TraceLoc;
+}());
 exports.TraceLoc = TraceLoc;
 //# sourceMappingURL=traceloc.js.map
