@@ -144,4 +144,3 @@ To run and append the results:
 ```
 yarn benchmark:save
 ```
-
