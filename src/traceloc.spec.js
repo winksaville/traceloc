@@ -7,7 +7,7 @@ setProjectRoot("./src");
 // A self executing anonymous function
 (function() {
     console.log("anonymous function");
-    let loc = here();
+    var loc = here();
     Expect(loc.func).not.toBeTruthy();
     Expect(loc.file).toBe("traceloc.spec.js");
     Expect(loc.line).toBeGreaterThan(0);
@@ -16,7 +16,7 @@ setProjectRoot("./src");
 
 function test() {
     console.log("test");
-    let loc = here();
+    var loc = here();
     Expect(loc.func).toBe("test");
     Expect(loc.file).toBe("traceloc.spec.js");
     Expect(loc.line).toBeGreaterThan(0);
