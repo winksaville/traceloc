@@ -109,8 +109,10 @@ Ready to exit
 exit: sub:18
 ```
 ## To Hack on this code
+
 ### Clone the repo
 git clone https://github.com/winksaville/traceloc
+
 ### Install dependencies
 ```
 yarn install
